@@ -1,7 +1,7 @@
 # Cross-platform import system log (Windows 10, Debian, Ubuntu)
 # Version 1.0
 
-# Import des modules
+# Modules import
 import platform
 import socket
 import subprocess
