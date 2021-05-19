@@ -1,4 +1,4 @@
-# Cross-platform python import system log (Windows 10, Debian, Ubuntu)
+# Cross-platform import system log (Windows 10, Debian, Ubuntu)
 # Version 1.0
 
 # Import des modules
@@ -9,13 +9,14 @@ import paramiko
 import time
 import os
 
+# networkscan function declare
 def networkscan():
 	net = input("Enter the Network Address: ")
 	net1= net.split('.')
 	a = '.'
 	net2 = net1[0] + a + net1[1] + a + net1[2] + a
-	st1 = int(input("Enter the Starting Number: "))
-	en1 = int(input("Enter the Last Number: "))
+	st1 = int(input("Enter the Starting digit of the network (/24): "))
+	en1 = int(input("Enter the Last digit of the network (/24): "))
 	en1 = en1 + 1
 
 	global osplatform
@@ -62,17 +63,17 @@ def networkscan():
 	print()
 
 	global hostip
-	hostip = input("Choose an IP address from the list to initiate the SSH connection? ? (x to exit) ")
+	hostip = input("Enter IP address from the list to initiate the SSH connection? ? (x to exit) ")
 	while hostip not in dict_IP_Online.values():
 		if hostip == "x":
 		 	exit()
 		else:
-			hostip = input("Please, choose an IP address from the list to initiate the SSH connection? (x to exit) ")
+			hostip = input("Please, enter IP address from the list to initiate the SSH connection? (x to exit) ")
 
 	global computerName
 	computerName = list(dict_IP_Online.keys())[list(dict_IP_Online.values()).index(hostip)]
 	
-
+# runningSSH function declare
 def runningSSH ():
 	runningSSH = True
 	while runningSSH:
