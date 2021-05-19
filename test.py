@@ -11,6 +11,7 @@ import os
 
 # networkscan function declare
 def networkscan():
+	# split network address into list "net2"
 	net = input("Enter the Network Address: ")
 	net1= net.split('.')
 	a = '.'
