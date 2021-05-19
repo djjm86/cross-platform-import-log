@@ -2,16 +2,16 @@
 # Version 1.0
 
 # Import des modules
-import subprocess
 import platform
 import socket
+import subprocess
 import paramiko
 import time
 import os
 
 # networkscan function declare
 def networkscan():
-	# split network address into list "net2"
+	# split network address into list from user input
 	net = input("Enter the Network Address: ")
 	net1= net.split('.')
 	a = '.'
@@ -20,6 +20,8 @@ def networkscan():
 	en1 = int(input("Enter the Last digit of the network (/24): "))
 	en1 = en1 + 1
 
+	# ping request construction according to the system/OS on which the program is being currently executed 
+	# platform.system() returns the system/OS name
 	global osplatform
 	osplatform = platform.system()
 	if (osplatform == "Windows"):
@@ -27,21 +29,30 @@ def networkscan():
 	else:
 		ping1 = "ping -c 1 "
 
-	dict_IP_Online ={}
+	# ping loop through the IP address range
 	for host in range(st1,en1):
 		addr = net2 + str(host)
 		comm = ping1 + addr
 		response = subprocess.Popen(comm, shell=True, stdout=subprocess.PIPE).communicate()[0]
 		
+		# dictionary updated with the hostname and ip address of the reachable machines
+		# socket.gethostbyaddr() returns a tuple containing hostname, alias list and IP address of the host 
+		dict_IP_Online ={}
+		# if statement on string 'TTL=' response used for Windows system
 		if 'TTL=' in str(response):
+			# the try block process socket.gethostbyaddr() on ip address
 			try:
 				hostName = socket.gethostbyaddr(addr)
+			# the except block process in case of the error.
 			except socket.herror:
 				hostName =("Unknown",)
 			dict_IP_Online.update({hostName[0]:addr})
+		# if statement on string 'ttl=' response used for Unix system
 		elif 'ttl=' in str(response):
+			# the try block process socket.gethostbyaddr() on ip address
 			try:
 				hostName = socket.gethostbyaddr(addr)
+			# the except block process in case of the error.
 			except socket.herror:
 				hostName =("Unknown",)
 			dict_IP_Online.update({hostName[0]:addr})
