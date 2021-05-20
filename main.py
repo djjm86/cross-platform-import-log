@@ -29,6 +29,8 @@ def networkscan():
 	else:
 		ping1 = "ping -c 1 "
 
+	# dictionary init
+	dict_IP_Online ={}
 	# ping loop through the IP address range
 	for host in range(st1,en1):
 		addr = net2 + str(host)
@@ -37,7 +39,6 @@ def networkscan():
 		
 		# dictionary updated with the hostname and ip address of the reachable machines
 		# socket.gethostbyaddr() returns a tuple containing hostname, alias list and IP address of the host 
-		dict_IP_Online ={}
 		# if statement on string 'TTL=' response used for Windows system
 		if 'TTL=' in str(response):
 			# the try block process socket.gethostbyaddr() on ip address
