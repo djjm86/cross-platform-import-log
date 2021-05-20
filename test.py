@@ -59,21 +59,25 @@ def networkscan():
 
 	print()
 
+	# if statement evaluate empty dictionary
 	if bool(dict_IP_Online) is False:
-		print("All IP are Offline")
+		print("All IP are offline or unreachable")
 		exit()
+	# else statement print table from dictionary 
 	else:
 		equal = '=' * 40
 		dash = '-' * 40
 		print(equal)
-		print("{: ^1}{: ^18}{: ^2}{: ^18}{: ^1}".format("|","Host","||", "IP","|"))
+		print("{: ^1}{: ^18}{: ^2}{: ^18}{: ^1}".format("|","Hostname","||", "IP","|"))
 		print(equal)
+		# loop on key and value from dictionary to print the table
 		for key, value in dict_IP_Online.items():
 			print("{: ^1}{: ^18}{: ^2}{: ^18}{: ^1}".format("|",key,"||", value,"|"))
 			print(dash)
 
 	print()
 
+	# while loop execute input as long as ip entered is not in dictionary value
 	global hostip
 	hostip = input("Enter IP address from the list to initiate the SSH connection? ? (x to exit) ")
 	while hostip not in dict_IP_Online.values():
@@ -82,34 +86,45 @@ def networkscan():
 		else:
 			hostip = input("Please, enter IP address from the list to initiate the SSH connection? (x to exit) ")
 
+	# global variable containing the value of the key associated with the value of ip entered 
 	global computerName
 	computerName = list(dict_IP_Online.keys())[list(dict_IP_Online.values()).index(hostip)]
 	
 # runningSSH function declare
 def runningSSH ():
+	# while loop execute function as long as is true
 	runningSSH = True
 	while runningSSH:
+		# while loop execute input username until is not empty
 		username = ""
 		while username == "":
 			username = input("Enter the {} SSH login ? (x to exit) ".format(computerName))
 			if username == "x":
 				exit()
-
+		# while loop execute input password until is not empty
 		password = ""
 		while password == "":
 			password = input("Enter the {} SSH password ? (x to exit) ".format(computerName))
 			if password == "x":
 				exit()
-
+		# the try block process ssh connect with paramiko module
 		try:
+			# create a new SSHClient
 			ssh = paramiko.SSHClient()
+			# policy as paramiko.AutoAddPolicy() to allow the Python script to SSH to a remote server with unknown SSH keys
 			ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+			# connect the client to the host with the credentials username and password
 			ssh.connect(hostip, username=username, password=password)
-
+			# execute the command on the remote host and return a tuple containing the stdin, stdout, and stderr from the host
+			# command get OS system version
 			command= "wmic os get Caption /value"
 			stdin,stdout,stderr=ssh.exec_command(command)
+			# call paramiko.channel.ChannelFile.read() with paramiko.channel.ChannelFile as stdout to return the output from the command
+			# output is decode to cp437 for windows console
 			stdout=stdout.read().decode ("cp437")
+			# string format time from local time 
 			timestr = time.strftime("%Y%m%d-%H%M%S")
+			
 			if 'Windows' in str(stdout):
 				command= "wevtutil epl System %temp%\\" + timestr + "_" + computerName + "_System_log.evtx"
 				stdin,stdout,stderr=ssh.exec_command(command)
@@ -149,12 +164,15 @@ def runningSSH ():
 			runningSSH = False
 			if sftp: sftp.close()
 			if ssh: ssh.close()
+		# the except block process in case on ssh port closed and break the loop
 		except paramiko.ssh_exception.NoValidConnectionsError as error:
 			print(error)
 			break
+		# the except block process in case on authentification issues and pass the loop
 		except paramiko.ssh_exception.AuthenticationException as error:
 			print(error)
 			pass
-
+# calling of function networkscan
 networkscan()
+# calling of function runningSSH
 runningSSH()
