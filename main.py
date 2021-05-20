@@ -124,45 +124,74 @@ def runningSSH ():
 			stdout=stdout.read().decode ("cp437")
 			# string format time from local time 
 			timestr = time.strftime("%Y%m%d-%H%M%S")
-			
+			# if statement on string 'Windows' stdout
 			if 'Windows' in str(stdout):
+				# execute the command on the remote host and return a tuple containing the stdin, stdout, and stderr from the host
+				# command export windows system log on remote host 
 				command= "wevtutil epl System %temp%\\" + timestr + "_" + computerName + "_System_log.evtx"
 				stdin,stdout,stderr=ssh.exec_command(command)
+				# recv_exit_status() return the exit status from the process
+				# if the command hasn’t finished yet, this method will wait until it does
 				exit_status = stdout.channel.recv_exit_status()       
 				if exit_status == 0:
+					# file transfers handled by open_sftp() on ssh instance of Paramiko.SSHClient
 					sftp = ssh.open_sftp()
+					# remote file path
 					filepath = "C:\\Users\\" + username + "\\AppData\\Local\\Temp\\" + timestr + "_" + computerName + "_System_log.evtx"
+					# if statement on Windows returns platform.system()
 					if (osplatform == "Windows"):
+						# create newpath on local host where script is being currently executed if not already exist
 						newpath = "C:\\temp\\"
 						if not os.path.exists(newpath):
 							os.makedirs(newpath)
+						# local file path in case of currently executed script is Windows
 						localpath = "C:\\temp\\" + timestr + "_" + computerName + "_System_log.evtx"
 					else:
-						localpath = "/tmp/" + timestr + "_" + computerName + "_System_log.evtx"			
+						# local file path in case of currently executed script is not Windows
+						localpath = "/tmp/" + timestr + "_" + computerName + "_System_log.evtx"		
+					# downloading file from remote machine
 					sftp.get(filepath,localpath)
+				# else exit status is provided by the server
 				else:
 					print("Error with SSH command", exit_status)
-			else:
+			# else statement on stdout
+			else:				
+				# execute the command on the remote host and return a tuple containing the stdin, stdout, and stderr from the host
+				# command export system log on remote host if host is not Windows
 				command= "cp /var/log/syslog /tmp/" + timestr + "_" + computerName + "_syslog"
 				stdin,stdout,stderr=ssh.exec_command(command)
-				exit_status = stdout.channel.recv_exit_status()       
+				exit_status = stdout.channel.recv_exit_status()
+				# recv_exit_status() return the exit status from the process
+				# if the command hasn’t finished yet, this method will wait until it does       
 				if exit_status == 0:
+					# file transfers handled by open_sftp() on ssh instance of Paramiko.SSHClient
 					sftp = ssh.open_sftp()
+					# remote file path
 					filepath = "/tmp/" + timestr + "_" + computerName + "_syslog"
+					# if statement on Windows returns platform.system()
 					if (osplatform == "Windows"):
+						# create newpath on local host where script is being currently executed if not already exist
 						newpath = "C:\\temp\\"
 						if not os.path.exists(newpath):
 							os.makedirs(newpath)
+						# local file path in case of currently executed script is Windows
 						localpath = "C:\\temp\\" + timestr + "_" + computerName + "_syslog"
 					else:
-						localpath = "/tmp/" + timestr + "_" + computerName + "_syslog"	
+						# local file path in case of currently executed script is not Windows
+						localpath = "/tmp/" + timestr + "_" + computerName + "_syslog"
+					# downloading file from remote machine
 					sftp.get(filepath,localpath)
+				# else exit status is provided by the server
 				else:
 					print("Error with SSH command", exit_status)
+			# print location of downloading file
 			print()
 			print("Your system log can be found in : {}".format(localpath))
+			# while statement put to false to stop the loop
 			runningSSH = False
+			# close sftp connection if exist
 			if sftp: sftp.close()
+			# close ssh connection if exist
 			if ssh: ssh.close()
 		# the except block process in case on ssh port closed and break the loop
 		except paramiko.ssh_exception.NoValidConnectionsError as error:
