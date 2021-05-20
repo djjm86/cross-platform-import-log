@@ -48,9 +48,9 @@ Windows :
 
 Le script contient deux fonctions :
 <br/>
-- **networkscan** : ping la plage définie d'une adresse réseau jusqu'à 254 machines et affiche sous forme de tableau les machines disponibles avec les adresses IP.
+**networkscan** : ping la plage définie d'une adresse réseau jusqu'à 254 machines et affiche sous forme de tableau les machines disponibles avec les adresses IP.
 <br/>
-- **runningSSH** : effectue la connexion ssh sur l'hôte choisi et importe le fichier de log système.
+**runningSSH** : effectue la connexion ssh sur l'hôte choisi et importe le fichier de log système.
 
 ## Licence
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
